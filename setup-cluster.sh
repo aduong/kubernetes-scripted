@@ -51,14 +51,26 @@ for i in 0 1 2; do
     --tags kubernetes-the-hard-way,controller
 done
 
+## create disks for vmx
+gcloud compute disks create vmx-disk \
+  --image-project ubuntu-os-cloud \
+  --image-family ubuntu-1804-lts \
+  --zone "$(gcloud config get-value compute/zone)"
+
+gcloud compute images create ubuntu-1804-lts-vmx \
+  --source-disk vmx-disk \
+  --source-disk-zone "$(gcloud config get-value compute/zone)" \
+  --licenses "https://compute.googleapis.com/compute/v1/projects/vm-options/global/licenses/enable-vmx"
+
+gcloud compute disks delete vmx-disk
+
 ## create worker machines
 for i in 0 1 2; do
   gcloud compute instances create worker-${i} \
     --async \
     --boot-disk-size 200GB \
     --can-ip-forward \
-    --image-family ubuntu-1804-lts \
-    --image-project ubuntu-os-cloud \
+    --image ubuntu-1804-lts-vmx \
     --machine-type n1-standard-1 \
     --metadata pod-cidr=10.200.${i}.0/24 \
     --no-address \

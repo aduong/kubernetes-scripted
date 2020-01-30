@@ -32,3 +32,5 @@ gcloud -q compute networks subnets delete kubernetes
 gcloud -q compute networks delete kubernetes-the-hard-way
 
 kubectl config delete-context kubernetes-the-hard-way
+
+gcloud -q compute images delete ubuntu-1804-lts-vmx
